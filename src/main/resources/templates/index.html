@@ -84,8 +84,10 @@
 
     <section>
       <h2>Szablon:</h2>
-      <textarea id="templateInput">
-      [['<div th:if=\"${customer.anonymous}\">\n   <span>Welcome, Guest</span>\n</div>\n<div th:unless=\"${customer.anonymous}\">\n   <span th:text=\"\'Hi, \' + ${customer.name}\">Hi, User</span>\n</div>']]
+      <textarea
+        id="templateInput"
+        th:text="'&lt;tr th:if=&quot;${customer.anonymous}&quot;&gt;&#10;  &lt;td&gt; Hi, [(${customer.name})] &lt;/td&gt;&#10;&lt;/tr&gt;'"
+      >
       </textarea>
     </section>
 
@@ -94,7 +96,7 @@
       <textarea id="variablesInput">
 {
   "customer": {
-    "anonymous": false,
+    "anonymous": true,
     "name": "Mike"
   }
 }
