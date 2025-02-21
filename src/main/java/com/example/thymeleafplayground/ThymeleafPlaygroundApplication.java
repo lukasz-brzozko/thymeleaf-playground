@@ -24,10 +24,11 @@ public class ThymeleafPlaygroundApplication {
         resolver.setCacheable(false);
         this.templateEngine.setTemplateResolver(resolver);
 
-        // ❗ ZAMIENIAMY OGNL NA SPRING EL
+        // Używamy SpringStandardDialect zamiast OGNL
         this.templateEngine.setDialect(new SpringStandardDialect());
     }
 
+    // Endpoint do renderowania Thymeleaf z przekazanymi zmiennymi
     @PostMapping("/render")
     public String renderTemplate(@RequestBody Map<String, Object> request) {
         String template = (String) request.get("template");
