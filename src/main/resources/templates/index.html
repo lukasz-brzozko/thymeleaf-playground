@@ -20,6 +20,10 @@
     />
     <title>Thymeleaf Playground</title>
     <style>
+      html {
+        scrollbar-gutter: stable;
+      }
+
       body {
         padding: var(--size-5);
         max-width: 1200px;
@@ -31,13 +35,12 @@
         margin-bottom: var(--size-2);
       }
 
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
+      :is(h2, h3, h4, h5, h6) {
         font-size: var(--font-size-3);
         margin-bottom: var(--size-3);
+      }
+
+      :is(h1, h2, h3, h4, h5, h6, p) {
         max-inline-size: none;
       }
 
@@ -55,34 +58,35 @@
       }
 
       #output,
+      #variablesInput,
       textarea {
+        display: block;
         font-family: var(--font-monospace-code), monospace;
         width: 100%;
         min-height: 150px;
         field-sizing: content;
         height: auto;
         max-height: 300px;
-      }
-
-      #output {
-        display: block;
-        white-space: pre;
         overflow: auto;
-        margin-top: 20px;
-      }
-
-      #variablesInput {
         white-space: pre;
       }
 
       .submit-btn {
         margin-block: var(--size-3);
       }
+
+      .error {
+        font-weight: var(--font-weight-7);
+        color: var(--red-7);
+      }
     </style>
   </head>
   <body>
     <h1>Thymeleaf Playground</h1>
-    <p class="desc">Wpisz kod Thymeleaf poniżej i kliknij "Render":</p>
+    <p class="desc">
+      Wpisz kod Thymeleaf i uzupełnij zmienne poniżej, a następnie kliknij
+      "Render":
+    </p>
 
     <section>
       <h2>Szablon:</h2>
@@ -110,7 +114,7 @@
 
     <section>
       <h3>Output:</h3>
-      <code id="output"></code>
+      <textarea id="output" readonly></textarea>
     </section>
 
     <script type="module">
@@ -118,6 +122,52 @@
       import * as prettierPluginHtml from "https://unpkg.com/prettier@3.5.1/plugins/html.mjs";
       import * as prettierPluginBabel from "https://unpkg.com/prettier@3.5.1/plugins/babel.mjs";
       import * as prettierPluginEstree from "https://unpkg.com/prettier@3.5.1/plugins/estree.mjs";
+
+      const pretterConfigs = {
+        html: {
+          parser: "html",
+          semi: false,
+          plugins: [prettierPluginHtml],
+        },
+
+        json: {
+          parser: "json",
+          plugins: [prettierPluginBabel, prettierPluginEstree],
+        },
+      };
+
+      const handleTabClick = (e) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+
+          const target = e.currentTarget;
+          const start = target.selectionStart;
+          const end = target.selectionEnd;
+
+          const tab = "  ";
+
+          target.value =
+            target.value.substring(0, start) +
+            tab +
+            target.value.substring(end);
+
+          target.selectionStart = target.selectionEnd = start + tab.length;
+        }
+      };
+
+      const handleError = (message) => {
+        const outputEl = document.getElementById("output");
+        outputEl.classList.add("error");
+        outputEl.textContent = message;
+      };
+
+      const formatHtml = (html) => {
+        return prettier.format(html, {
+          parser: "html",
+          semi: false,
+          plugins: [prettierPluginHtml],
+        });
+      };
 
       const renderTemplate = () => {
         const templateEl = document.getElementById("templateInput");
@@ -130,16 +180,12 @@
           variables = JSON.parse(variablesText);
 
           prettier
-            .format(variablesText, {
-              parser: "json",
-              plugins: [prettierPluginBabel, prettierPluginEstree],
-            })
+            .format(variablesText, pretterConfigs.json)
             .then((formatted) => {
               variablesEl.value = formatted;
             });
         } catch (e) {
-          document.getElementById("output").innerHTML =
-            "<b style='color:red;'>Błąd: Niepoprawny JSON!</b>";
+          handleError("Błąd: Niepoprawny JSON!");
           return;
         }
 
@@ -150,8 +196,9 @@
         })
           .then((response) => {
             if (response?.status === 500) {
-              document.getElementById("output").innerHTML =
-                "<b style='color:red;'>Wystąpił błąd! Sprawdź poprawność wprowadzonych danych.</b>";
+              handleError(
+                "Wystąpił błąd! Sprawdź poprawność wprowadzonych danych."
+              );
               return;
             }
 
@@ -160,21 +207,24 @@
           .then(async (data) => {
             if (!data) return;
 
-            document.getElementById("output").textContent =
-              await prettier.format(data, {
-                parser: "html",
-                semi: false,
-                plugins: [prettierPluginHtml],
-              });
+            const outputEl = document.getElementById("output");
+            outputEl.classList.remove("error");
+            outputEl.textContent = await prettier.format(
+              data,
+              pretterConfigs.html
+            );
           })
           .catch((error) => {
-            document.getElementById("output").innerHTML =
-              "<b style='color:red;'>Wystąpił błąd!</b>";
-            return;
+            handleError("Wystąpił błąd!");
             console.error("Error:", error);
+            return;
           });
       };
 
+      [
+        document.getElementById("templateInput"),
+        document.getElementById("variablesInput"),
+      ].forEach((el) => el.addEventListener("keydown", handleTabClick));
       document
         .getElementById("render-btn")
         .addEventListener("click", renderTemplate);
