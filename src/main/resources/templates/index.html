@@ -199,13 +199,13 @@
               handleError(
                 "Wystąpił błąd! Sprawdź poprawność wprowadzonych danych."
               );
-              return;
+              return null;
             }
 
             return response.text();
           })
           .then(async (data) => {
-            if (!data) return;
+            if (data === null) return;
 
             const outputEl = document.getElementById("output");
             outputEl.classList.remove("error");
