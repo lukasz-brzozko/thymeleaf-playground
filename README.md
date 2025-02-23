@@ -22,6 +22,12 @@ This is a simple Thymeleaf playground using Spring Boot.
    docker-compose up --build
    ```
 
+   If image was built already:
+
+   ```sh
+   docker-compose up --build
+   ```
+
 3. **Access the application:**
 
    Open your web browser and navigate to [http://localhost:8080](http://localhost:8080).
