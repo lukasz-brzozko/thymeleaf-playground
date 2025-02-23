@@ -232,7 +232,7 @@
 
       [templateEl, variablesEl].forEach((el) => {
         el.addEventListener("keydown", handleTabClick);
-        el.addEventListener("change", enableSubmitBtn);
+        el.addEventListener("input", enableSubmitBtn);
       });
       submitBtnEl.addEventListener("click", renderTemplate);
     </script>
