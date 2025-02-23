@@ -27,7 +27,7 @@ https://github.com/user-attachments/assets/4d86afed-08cf-4dd2-bf9e-5e90766371ff
    If image was built already:
 
    ```sh
-   docker-compose up --build
+   docker-compose up
    ```
 
 3. **Access the application:**
