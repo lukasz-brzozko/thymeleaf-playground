@@ -2,6 +2,8 @@
 
 This is a simple Thymeleaf playground using Spring Boot.
 
+https://github.com/user-attachments/assets/4d86afed-08cf-4dd2-bf9e-5e90766371ff
+
 ## Prerequisites
 
 - Docker
