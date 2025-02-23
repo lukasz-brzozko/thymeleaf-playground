@@ -136,6 +136,21 @@
         },
       };
 
+      const outputEl = document.getElementById("output");
+      const templateEl = document.getElementById("templateInput");
+      const variablesEl = document.getElementById("variablesInput");
+      const submitBtnEl = document.getElementById("render-btn");
+
+      const disableSubmitBtn = () => {
+        submitBtnEl.disabled = true;
+        submitBtnEl.title = "Edytuj dane aby odblokować przycisk";
+      };
+
+      const enableSubmitBtn = () => {
+        submitBtnEl.disabled = false;
+        submitBtnEl.title = "";
+      };
+
       const handleTabClick = (e) => {
         if (event.key === "Tab") {
           event.preventDefault();
@@ -156,7 +171,6 @@
       };
 
       const handleError = (message) => {
-        const outputEl = document.getElementById("output");
         outputEl.classList.add("error");
         outputEl.textContent = message;
       };
@@ -169,65 +183,58 @@
         });
       };
 
-      const renderTemplate = () => {
-        const templateEl = document.getElementById("templateInput");
-        const variablesEl = document.getElementById("variablesInput");
+      const renderTemplate = async () => {
         const template = templateEl.value;
         const variablesText = variablesEl.value;
         let variables;
 
         try {
-          variables = JSON.parse(variablesText);
+          const formattedText = await prettier.format(
+            variablesText,
+            pretterConfigs.json
+          );
 
-          prettier
-            .format(variablesText, pretterConfigs.json)
-            .then((formatted) => {
-              variablesEl.value = formatted;
-            });
+          variables = JSON.parse(formattedText);
+          variablesEl.value = formattedText;
         } catch (e) {
+          disableSubmitBtn();
           handleError("Błąd: Niepoprawny JSON!");
           return;
         }
 
-        fetch("/render", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ template, variables }),
-        })
-          .then((response) => {
-            if (response?.status === 500) {
-              handleError(
-                "Wystąpił błąd! Sprawdź poprawność wprowadzonych danych."
-              );
-              return null;
-            }
-
-            return response.text();
-          })
-          .then(async (data) => {
-            if (data === null) return;
-
-            const outputEl = document.getElementById("output");
-            outputEl.classList.remove("error");
-            outputEl.textContent = await prettier.format(
-              data,
-              pretterConfigs.html
-            );
-          })
-          .catch((error) => {
-            handleError("Wystąpił błąd!");
-            console.error("Error:", error);
-            return;
+        try {
+          disableSubmitBtn();
+          const response = await fetch("/render", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ template, variables }),
           });
+
+          if (response?.status > 299) {
+            handleError(
+              "Wystąpił błąd! Sprawdź poprawność wprowadzonych danych."
+            );
+            return;
+          }
+
+          const data = await response.text();
+
+          outputEl.classList.remove("error");
+          outputEl.textContent = await prettier.format(
+            data,
+            pretterConfigs.html
+          );
+        } catch (error) {
+          handleError("Wystąpił błąd!");
+          console.error("Error:", error);
+        }
       };
 
-      [
-        document.getElementById("templateInput"),
-        document.getElementById("variablesInput"),
-      ].forEach((el) => el.addEventListener("keydown", handleTabClick));
-      document
-        .getElementById("render-btn")
-        .addEventListener("click", renderTemplate);
+      [templateEl, variablesEl].forEach((el) => {
+        el.addEventListener("keydown", handleTabClick);
+        el.addEventListener("change", enableSubmitBtn);
+      });
+      submitBtnEl.addEventListener("click", renderTemplate);
     </script>
   </body>
 </html>
