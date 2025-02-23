@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/4d86afed-08cf-4dd2-bf9e-5e90766371ff
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/your-username/thymeleaf-playground.git
+   git clone https://github.com/lukasz-brzozko/thymeleaf-playground.git
    cd thymeleaf-playground
    ```
 
