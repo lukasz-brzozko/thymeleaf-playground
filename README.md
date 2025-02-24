@@ -2,7 +2,7 @@
 
 This is a simple Thymeleaf playground using Spring Boot.
 
-https://github.com/user-attachments/assets/4d86afed-08cf-4dd2-bf9e-5e90766371ff
+https://github.com/user-attachments/assets/e185f666-e374-45bb-bac8-87e5b040c237
 
 ## Prerequisites
 
