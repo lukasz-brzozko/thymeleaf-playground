@@ -55,10 +55,10 @@ Renders a Thymeleaf template with the provided variables.
 curl -X POST http://localhost:8080/render \
   -H "Content-Type: application/json" \
   -d '{
-        "template": "<tr th:if=\"${customer.anonymous}\"><td>Hi, [(${customer.name})]</td></tr>",
+        "template": "<tr th:if=\"${customer.isLoggedIn}\"><td>Hi, [(${customer.name})]</td></tr>",
         "variables": {
           "customer": {
-            "anonymous": true,
+            "isLoggedIn": true,
             "name": "Mike"
           }
         }
