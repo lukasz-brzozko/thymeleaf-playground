@@ -24,7 +24,7 @@ https://github.com/user-attachments/assets/e185f666-e374-45bb-bac8-87e5b040c237
    docker-compose up --build
    ```
 
-   If image was built already:
+   If the image was built already:
 
    ```sh
    docker-compose up

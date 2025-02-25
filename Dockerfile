@@ -1,24 +1,24 @@
-# Etap 1: Budowanie aplikacji
+# Stage 1: Build the application
 FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# Kopiowanie plików konfiguracyjnych i pobranie zależności
+# Copy configuration files and download dependencies
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Kopiowanie kodu źródłowego i budowanie aplikacji
+# Copy source code and build the application
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Etap 2: Uruchamianie aplikacji
+# Stage 2: Run the application
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Kopiowanie zbudowanego pliku JAR
+# Copy the built JAR file
 COPY --from=builder /app/target/*.jar app.jar
 
-# Eksponowanie portu 8080
+# Expose port 8080
 EXPOSE 8080
 
-# Uruchomienie aplikacji
+# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
