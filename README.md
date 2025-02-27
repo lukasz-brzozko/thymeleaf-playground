@@ -21,13 +21,13 @@ https://github.com/user-attachments/assets/e185f666-e374-45bb-bac8-87e5b040c237
 2. **Build and run the project using Docker Compose:**
 
    ```sh
-   docker-compose up --build
+   docker compose up --build
    ```
 
    If the image was built already:
 
    ```sh
-   docker-compose up
+   docker compose up
    ```
 
 3. **Access the application:**
